@@ -1,26 +1,25 @@
 package vista;
 
-import controlador.GestorPedidos;
-import controlador.GestorRepartidores;
+
+import dao.EntregaDAO;
+import modelo.Entrega;
 import modelo.Repartidor;
+import dao.RepartidorDAO;
+import dao.PedidoDAO;
+import modelo.Pedido;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class VentanaAsignarRepartidor extends JFrame {
 
-    private GestorPedidos gestorPedidos;
-    private GestorRepartidores gestorRepartidores;
     private JComboBox<Repartidor> cmbRepartidor;
     private JComboBox<modelo.Pedido> cmbPedido;
     private JButton btnIniciarEntrega;
 
-    public VentanaAsignarRepartidor(
-            GestorPedidos gestorPedidos,
-            GestorRepartidores gestorRepartidores) {
-
-        this.gestorPedidos = gestorPedidos;
-        this.gestorRepartidores = gestorRepartidores;
+    public VentanaAsignarRepartidor() {
 
         setTitle("Asignar repartidor");
         setSize(500, 300);
@@ -34,13 +33,17 @@ public class VentanaAsignarRepartidor extends JFrame {
 
         cmbRepartidor = new JComboBox<>();
 
-        for (Repartidor repartidor : gestorRepartidores.getRepartidores()) {
+        RepartidorDAO repartidorDAO = new RepartidorDAO();
+
+        for (Repartidor repartidor : repartidorDAO.listarTodos()) {
             cmbRepartidor.addItem(repartidor);
         }
 
         cmbPedido = new JComboBox<>();
 
-        for (modelo.Pedido pedido : gestorPedidos.getPedidos()) {
+        PedidoDAO pedidoDAO = new PedidoDAO();
+
+        for (Pedido pedido : pedidoDAO.listarTodos()) {
             cmbPedido.addItem(pedido);
         }
 
@@ -53,6 +56,24 @@ public class VentanaAsignarRepartidor extends JFrame {
 
         panel.add(new JLabel(""));
         panel.add(btnIniciarEntrega);
+
+        btnIniciarEntrega.addActionListener(e -> {
+
+            Repartidor repartidor = (Repartidor) cmbRepartidor.getSelectedItem();
+            Pedido pedido = (Pedido) cmbPedido.getSelectedItem();
+
+            Entrega entrega = new Entrega(
+                    pedido.getId_pedido(),
+                    repartidor.getIdRepartidor(),
+                    LocalDate.now(),
+                    LocalTime.now()
+            );
+
+            EntregaDAO entregaDAO = new EntregaDAO();
+            entregaDAO.guardar(entrega);
+
+            JOptionPane.showMessageDialog(this, "Entrega registrada correctamente.");
+        });
 
         add(panel);
 

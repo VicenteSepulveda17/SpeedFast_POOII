@@ -4,6 +4,7 @@ import controlador.GestorPedidos;
 import modelo.Pedido;
 import javax.swing.*;
 import java.awt.*;
+import dao.PedidoDAO;
 
 public class VentanaRegistroPedido extends JFrame {
 
@@ -87,6 +88,9 @@ public class VentanaRegistroPedido extends JFrame {
             }
 
             Pedido pedido = new Pedido(idPedido, direccion, tipo);
+
+            PedidoDAO pedidoDAO = new PedidoDAO();
+            pedidoDAO.guardar(pedido);
 
             gestorPedidos.agregarPedido(pedido);
 

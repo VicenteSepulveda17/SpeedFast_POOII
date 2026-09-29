@@ -1,20 +1,19 @@
 package vista;
 
-import controlador.GestorPedidos;
+
 import modelo.Pedido;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import dao.PedidoDAO;
 
 public class VentanaListaPedidos extends JFrame {
 
     private JTable tablaPedidos;
     private DefaultTableModel modeloTabla;
-    private GestorPedidos gestorPedidos;
 
-    public VentanaListaPedidos(GestorPedidos gestorPedidos) {
-        this.gestorPedidos = gestorPedidos;
+    public VentanaListaPedidos() {
 
 
         setTitle("Lista de pedidos");
@@ -37,7 +36,10 @@ public class VentanaListaPedidos extends JFrame {
     }
 
     private void cargarPedidos() {
-        for (Pedido pedido : gestorPedidos.getPedidos()) {
+
+        PedidoDAO pedidoDAO = new PedidoDAO();
+
+        for (Pedido pedido : pedidoDAO.listarTodos()) {
             modeloTabla.addRow(new Object[]{
                     pedido.getId_pedido(),
                     pedido.getDireccion(),
