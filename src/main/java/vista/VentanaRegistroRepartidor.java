@@ -54,16 +54,42 @@ public class VentanaRegistroRepartidor extends JFrame {
 
             int id = Integer.parseInt(idTexto);
 
+            if (id <= 0) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El ID debe ser mayor que 0.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
             Repartidor repartidor = new Repartidor(id, nombre);
-
             RepartidorDAO repartidorDAO = new RepartidorDAO();
-            repartidorDAO.guardar(repartidor);
 
-            JOptionPane.showMessageDialog(this,
-                    "Repartidor registrado correctamente.");
+            boolean guardado = repartidorDAO.guardar(repartidor);
 
-            txtId.setText("");
-            txtNombre.setText("");
+            if (guardado) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Repartidor registrado correctamente.",
+                        "Confirmación",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                txtId.setText("");
+                txtNombre.setText("");
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo registrar el repartidor.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
 
         } catch (NumberFormatException e) {
 

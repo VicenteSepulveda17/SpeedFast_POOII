@@ -1,5 +1,7 @@
 package main;
 
+import dao.ClienteDAO;
+import modelo.Cliente;
 import vista.VentanaPrincipal;
 
 public class Main {

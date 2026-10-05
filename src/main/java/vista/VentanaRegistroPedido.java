@@ -2,6 +2,7 @@ package vista;
 
 import controlador.GestorPedidos;
 import modelo.Pedido;
+import modelo.EstadoPedido;
 import javax.swing.*;
 import java.awt.*;
 import dao.PedidoDAO;
@@ -12,11 +13,13 @@ public class VentanaRegistroPedido extends JFrame {
     private JTextField txtId;
     private JTextField txtDireccion;
     private JComboBox<String> cmbTipo;
+    private JComboBox<EstadoPedido> cmbEstado;
     private JButton btnGuardar;
 
     private JLabel lblId;
     private JLabel lblDireccion;
     private JLabel lblTipo;
+    private JLabel lblEstado;
 
     public VentanaRegistroPedido(GestorPedidos gestorPedidos){
         this.gestorPedidos = gestorPedidos;
@@ -33,16 +36,20 @@ public class VentanaRegistroPedido extends JFrame {
                 "COMIDA",
                 "ENCOMIENDA",
                 "EXPRESS"
+
         });
+
+        cmbEstado = new JComboBox<>(EstadoPedido.values());
 
         btnGuardar = new JButton("Guardar");
 
         lblId = new JLabel("ID:");
         lblDireccion = new JLabel("Direccion: ");
         lblTipo = new JLabel("Tipo: ");
+        lblEstado = new JLabel("Estado: ");
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 2));
+        panel.setLayout(new GridLayout(5, 2));
 
         panel.add(lblId);
         panel.add(txtId);
@@ -53,6 +60,9 @@ public class VentanaRegistroPedido extends JFrame {
         panel.add(lblTipo);
         panel.add(cmbTipo);
 
+        panel.add(lblEstado);
+        panel.add(cmbEstado);
+
         panel.add(new JLabel(""));
         panel.add(btnGuardar);
 
@@ -62,6 +72,7 @@ public class VentanaRegistroPedido extends JFrame {
             String idTexto = txtId.getText().trim();
             String direccion = txtDireccion.getText().trim();
             String tipo = (String) cmbTipo.getSelectedItem();
+            EstadoPedido estado = (EstadoPedido) cmbEstado.getSelectedItem();
 
             if (idTexto.isEmpty() || direccion.isEmpty()) {
                 JOptionPane.showMessageDialog(
@@ -87,23 +98,47 @@ public class VentanaRegistroPedido extends JFrame {
                 return;
             }
 
-            Pedido pedido = new Pedido(idPedido, direccion, tipo);
+            if (idPedido <= 0) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El ID del pedido debe ser mayor que 0.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            Pedido pedido = new Pedido(idPedido, direccion, tipo, estado);
 
             PedidoDAO pedidoDAO = new PedidoDAO();
-            pedidoDAO.guardar(pedido);
 
-            gestorPedidos.agregarPedido(pedido);
+            boolean guardado = pedidoDAO.guardar(pedido);
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Pedido registrado correctamente.",
-                    "Confirmación",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            if (guardado) {
 
-            txtId.setText("");
-            txtDireccion.setText("");
-            cmbTipo.setSelectedIndex(0);
+                gestorPedidos.agregarPedido(pedido);
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Pedido registrado correctamente.",
+                        "Confirmación",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                txtId.setText("");
+                txtDireccion.setText("");
+                cmbTipo.setSelectedIndex(0);
+                cmbEstado.setSelectedIndex(0);
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo registrar el pedido.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
     }
 }

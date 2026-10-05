@@ -16,7 +16,7 @@ import java.time.LocalTime;
 public class VentanaAsignarRepartidor extends JFrame {
 
     private JComboBox<Repartidor> cmbRepartidor;
-    private JComboBox<modelo.Pedido> cmbPedido;
+    private JComboBox<Pedido> cmbPedido;
     private JButton btnIniciarEntrega;
 
     public VentanaAsignarRepartidor() {
@@ -62,26 +62,6 @@ public class VentanaAsignarRepartidor extends JFrame {
             Repartidor repartidor = (Repartidor) cmbRepartidor.getSelectedItem();
             Pedido pedido = (Pedido) cmbPedido.getSelectedItem();
 
-            Entrega entrega = new Entrega(
-                    pedido.getId_pedido(),
-                    repartidor.getIdRepartidor(),
-                    LocalDate.now(),
-                    LocalTime.now()
-            );
-
-            EntregaDAO entregaDAO = new EntregaDAO();
-            entregaDAO.guardar(entrega);
-
-            JOptionPane.showMessageDialog(this, "Entrega registrada correctamente.");
-        });
-
-        add(panel);
-
-        btnIniciarEntrega.addActionListener(e -> {
-
-            Repartidor repartidor = (Repartidor) cmbRepartidor.getSelectedItem();
-            modelo.Pedido pedido = (modelo.Pedido) cmbPedido.getSelectedItem();
-
             if (repartidor == null || pedido == null) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -92,16 +72,33 @@ public class VentanaAsignarRepartidor extends JFrame {
                 return;
             }
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Entrega iniciada correctamente.\n\n" +
-                            "Pedido: " + pedido.getId_pedido() + "\n" +
-                            "Dirección: " + pedido.getDireccion() + "\n" +
-                            "Repartidor: " + repartidor.getNombre() + "\n" +
-                            "ID repartidor: " + repartidor.getIdRepartidor(),
-                    "Entrega iniciada",
-                    JOptionPane.INFORMATION_MESSAGE
+            Entrega entrega = new Entrega(
+                    pedido.getId_pedido(),
+                    repartidor.getIdRepartidor(),
+                    LocalDate.now(),
+                    LocalTime.now()
             );
+
+            EntregaDAO entregaDAO = new EntregaDAO();
+            boolean guardada = entregaDAO.guardar(entrega);
+
+            if (guardada) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Entrega iniciada correctamente",
+                        "Confirmación",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo iniciar la entrega.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
+
+        add(panel);
     }
 }
